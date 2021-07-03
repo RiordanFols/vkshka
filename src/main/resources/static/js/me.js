@@ -6,8 +6,6 @@ let replyApi = Vue.resource('/reply{/id}');
 let replyLikeApi = Vue.resource('/reply-like{/id}');
 let subscriptionApi = Vue.resource('/subscription{/id}');
 
-import {updateLastOnline} from './updateLastOnline.js';
-
 Vue.component('reply-el', {
     props: ['reply', 'replies', 'deleteReply', 'me'],
     data: function() {
@@ -438,8 +436,8 @@ Vue.component('user-info', {
     }
 });
 
-let app = new Vue({
-    el: '#app',
+let me = new Vue({
+    el: '#me',
     data: {
         me: frontendData.me,
         posts: frontendData.userPosts,
@@ -450,7 +448,4 @@ let app = new Vue({
             '<post-form :me="me"/>' +
             '<post-list :posts="posts" :me="me"/>' +
         '</div>',
-    created: function () {
-        updateLastOnline();
-    }
 });

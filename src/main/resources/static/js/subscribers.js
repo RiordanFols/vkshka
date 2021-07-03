@@ -1,6 +1,4 @@
 
-import {updateLastOnline} from './updateLastOnline.js';
-
 Vue.component('sub-info', {
     props: ['sub', 'subs'],
     template:
@@ -24,8 +22,8 @@ Vue.component('sub-list', {
         '</div>'
 });
 
-let app = new Vue({
-    el: '#app',
+let subscribers = new Vue({
+    el: '#subscribers',
     data: {
         subscribers: frontendData.subscribers,
     },
@@ -33,7 +31,4 @@ let app = new Vue({
         '<div class="middle">' +
             '<sub-list :subs="subscribers"/>' +
         '</div>',
-    created: function () {
-        updateLastOnline();
-    }
 });

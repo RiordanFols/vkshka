@@ -1,6 +1,6 @@
 
-let app = new Vue({
-    el: '#app',
+let login = new Vue({
+    el: '#login',
     data: {
         error: frontendData.error,
         notification: frontendData.notification,

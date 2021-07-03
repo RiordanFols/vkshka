@@ -1,7 +1,5 @@
 let chatApi = Vue.resource('/chat{/id}');
 
-import {updateLastOnline} from './updateLastOnline.js';
-
 Vue.component('message-img', {
     props: ['imgFilename'],
     template:
@@ -118,8 +116,8 @@ Vue.component('user-list', {
         '</div>'
 });
 
-let app = new Vue({
-    el: '#app',
+let messenger = new Vue({
+    el: '#messenger',
     data: {
         userList: frontendData.userList,
         messages: frontendData.messages,
@@ -131,7 +129,4 @@ let app = new Vue({
             '<user-list :users="userList"/>' +
             '<msg-block :messages="messages" :target="target" :me="me"/>' +
         '</div>',
-    created: function () {
-        updateLastOnline();
-    }
 });

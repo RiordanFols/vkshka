@@ -1,6 +1,6 @@
 
-let app = new Vue({
-    el: '#app',
+let registration = new Vue({
+    el: '#registration',
     data: {
         genders: frontendData.genders,
         error: frontendData.error,

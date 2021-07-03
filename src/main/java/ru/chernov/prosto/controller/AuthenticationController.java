@@ -43,7 +43,7 @@ public class AuthenticationController {
 
 
         model.addAttribute("frontendData", data);
-        return "guest/login";
+        return "auth/login";
     }
 
     @GetMapping("/registration")
@@ -57,7 +57,7 @@ public class AuthenticationController {
         data.put("error", error);
 
         model.addAttribute("frontendData", data);
-        return "guest/registration";
+        return "auth/registration";
     }
 
     @PostMapping("/registration")

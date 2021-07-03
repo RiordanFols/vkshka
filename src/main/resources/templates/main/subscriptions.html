@@ -11,38 +11,22 @@
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script th:inline="javascript">
         let frontendData = [[${frontendData}]];
+        let currentUrl = window.location.href;
     </script>
 </head>
 <body class="body">
 
-<div class="header">
-    <div class="header-content">
-        <div class="header-app-name">NotVK</div>
-        <div class="header-middle">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        <a th:href="@{/me}"><div class="header-profile">
-            <img class="header-profile-img" src="" th:src="@{/uploads/img/avatar/} + ${frontendData.me.avatarFilename}" alt=""/>
-            <div class="header-profile-name" th:text="${frontendData.me.name} + ' ' + ${frontendData.me.surname}"></div>
-        </div></a>
-        <a class="header-logout" href="/logout">Выйти</a>
-    </div>
-</div>
+<div id="lastOnlineUpdater"></div>
+<div id="header"></div>
 
 <div class="main">
-    <div class="left">
-        <a href="/profile"><div class="left-btn">Личный кабинет</div></a>
-        <a href="/me"><div class="left-btn">Моя страница</div></a>
-        <a href="/feed"><div class="left-btn">Новости</div></a>
-        <a href="/messenger"><div class="left-btn">Сообщения</div></a>
-        <a href="/subscriptions"><div class="left-btn active-left-btn">Подписки</div></a>
-        <a href="/subscribers"><div class="left-btn">Подписчики</div></a>
-    </div>
-    <div id="app"></div>
+    <div id="leftMenu"></div>
+    <div id="subscriptions"></div>
 </div>
 
+<script type="module" src="/js/common/last_online_updater.js"></script>
+<script type="module" src="/js/common/header.js"></script>
+<script type="module" src="/js/common/left_menu.js"></script>
 <script type="module" src="/js/subscriptions.js"></script>
 
 </body>

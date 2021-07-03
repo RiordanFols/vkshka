@@ -5,8 +5,6 @@ let commentLikeApi = Vue.resource('/comment-like{/id}');
 let replyApi = Vue.resource('/reply{/id}');
 let replyLikeApi = Vue.resource('/reply-like{/id}');
 
-import {updateLastOnline} from './updateLastOnline.js';
-
 Vue.component('reply-el', {
     props: ['reply', 'replies', 'me', 'deleteReply'],
     data: function() {
@@ -432,8 +430,8 @@ Vue.component('user-info', {
     }
 });
 
-let app = new Vue({
-    el: '#app',
+let user = new Vue({
+    el: '#user',
     data: {
         me: frontendData.me,
         user: frontendData.user,
@@ -444,7 +442,4 @@ let app = new Vue({
             '<user-info :user="user"/>' +
             '<post-list :posts="posts" :me="me"/>' +
         '</div>',
-    created: function () {
-        updateLastOnline();
-    }
 });
