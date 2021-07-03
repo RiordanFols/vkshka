@@ -2,7 +2,8 @@
 let leftMenu = new Vue({
     el: '#leftMenu',
     data: {
-        curUrl: currentUrl.split(":")[2].substring(4),
+        // часть url после :PORT и до параметров
+        curUrl: currentUrl.split(":")[2].substring(4).split("?")[0],
         activeBtn: 0,
     },
     template:
