@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.chernov.prosto.domain.Gender;
 import ru.chernov.prosto.domain.Role;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.formatter.UserInfoFormatter;
@@ -89,7 +90,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setUsername(username);
 
-        user.setGender(gender);
+        this.setGender(user, gender);
 
         user.setEmail(email);
         user.setName(name);
@@ -147,5 +148,15 @@ public class UserService implements UserDetailsService {
         userInfoFormatter.formatBirthdayString(user);
         userInfoFormatter.formatAge(user);
         userInfoFormatter.formatLastOnlineString(user);
+    }
+
+    public void setGender(User user, String gender) {
+        Gender newGender = Gender.valueOf(gender);
+        // если пользователь еще не создан или имеет стоковый аватар
+        if (user.getGender() == null || user.getAvatarFilename().equals(user.getGender().getStockAvatarFilename()))
+            // ставим ему новый стоковый аватар
+            user.setAvatarFilename(newGender.getStockAvatarFilename());
+
+        user.setGender(newGender);
     }
 }

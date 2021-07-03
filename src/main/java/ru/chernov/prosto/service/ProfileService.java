@@ -89,7 +89,7 @@ public class ProfileService {
             return Error.EMAIL_IS_TAKEN;
 
         user.setUsername(username);
-        user.setGender(gender);
+        userService.setGender(user, gender);
         user.setName(name);
         user.setSurname(surname);
         user.setStatus(status);

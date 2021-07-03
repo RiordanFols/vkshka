@@ -144,13 +144,4 @@ public class User implements UserDetails {
         return isActive;
     }
 
-    public void setGender(String gender) {
-        Gender newGender = Gender.valueOf(gender);
-        // если пользователь еще не создан или имеет стоковый аватар
-        if (this.getGender() == null || this.avatarFilename.equals(this.getGender().getStockAvatarFilename()))
-            // ставим ему новый стоковый аватар
-            this.avatarFilename = newGender.getStockAvatarFilename();
-
-        this.gender = newGender;
-    }
 }
