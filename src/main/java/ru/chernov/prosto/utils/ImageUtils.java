@@ -1,6 +1,9 @@
 package ru.chernov.prosto.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
 
 /**
  * @author Pavel Chernov
@@ -10,16 +13,14 @@ public class ImageUtils {
     public static boolean isImageTypeAllowed(MultipartFile multipartFile) {
         if (multipartFile == null
                 || multipartFile.isEmpty()
-                || multipartFile.getOriginalFilename() == null
-                || multipartFile.getOriginalFilename().isEmpty())
+                || StringUtils.isEmpty(multipartFile.getOriginalFilename()))
             return false;
 
         String contentType = multipartFile.getContentType();
-        return (contentType != null && (
-                (contentType.equals("image/png"))
-                        || (contentType.equals("image/jpg"))
-                        || (contentType.equals("image/jpeg"))
-                        || (contentType.equals("image/gif"))));
+        if (contentType == null)
+            return false;
+
+        return Arrays.asList("image/png", "image/jpg", "image/jpeg", "image/gif").contains(contentType);
     }
 
 }
