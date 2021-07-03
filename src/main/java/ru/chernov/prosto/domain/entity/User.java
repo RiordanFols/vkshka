@@ -61,19 +61,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private LocalDate birthday;
 
-    @Transient
-    private String birthdayString;
-
-    @Transient
-    private int age;
-
     @Column
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     @JsonIgnore
     private LocalDateTime lastOnline;
-
-    @Transient
-    private String lastOnlineString;
 
     // в незашифрованном виде макс. длина 25 символов
     @Column(length = 100, nullable = false)
@@ -87,6 +78,15 @@ public class User implements UserDetails {
     @Column
     @JsonIgnore
     private String activationCode;
+
+    @Transient
+    private String birthdayString;
+
+    @Transient
+    private int age;
+
+    @Transient
+    private String lastOnlineString;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role",

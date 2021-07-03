@@ -89,9 +89,7 @@ public class UserService implements UserDetailsService {
                              String name, String surname, String password) {
         User user = new User();
         user.setUsername(username);
-
         this.setGender(user, gender);
-
         user.setEmail(email);
         user.setName(name);
         user.setSurname(surname);
@@ -103,7 +101,7 @@ public class UserService implements UserDetailsService {
 //        user.setActivationCode(UUID.randomUUID().toString());
         mailManager.send(new MailInfo(user, "1"));
 
-        userRepository.save(user);
+        save(user);
     }
 
     public void subscribe(long userId, long targetId) {
@@ -112,7 +110,7 @@ public class UserService implements UserDetailsService {
 
         if (!user.getSubscriptions().contains(target)) {
             user.getSubscriptions().add(target);
-            userRepository.save(user);
+            save(user);
         }
     }
 
@@ -122,7 +120,7 @@ public class UserService implements UserDetailsService {
 
         if (user.getSubscriptions().contains(target)) {
             user.getSubscriptions().remove(target);
-            userRepository.save(user);
+            save(user);
         }
     }
 
@@ -133,7 +131,7 @@ public class UserService implements UserDetailsService {
             return false;
 
         user.setActive(true);
-        userRepository.save(user);
+        save(user);
         return true;
     }
 
@@ -141,7 +139,7 @@ public class UserService implements UserDetailsService {
         User user = findById(userId);
         user.setLastOnline(LocalDateTime.now());
 
-        userRepository.save(user);
+        save(user);
     }
 
     public void formatExtraInfo(User user) {
