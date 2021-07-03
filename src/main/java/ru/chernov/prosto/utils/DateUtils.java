@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 public class DateUtils {
 
     private static final String DOT_FORMAT = "dd.MM.yyyy";
-    private static final String SPACE_FORMAT = "dd MM yyyy";
 
     public static String formatDate(LocalDate localDate) {
         var dateFormatter = DateTimeFormatter.ofPattern(DOT_FORMAT);
