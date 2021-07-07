@@ -11,7 +11,8 @@ public enum Error {
     TOO_SHORT_NEW_PASSWORD("Новый пароль должен содержать минимум 6 символов"),
     WRONG_PASSWORD("Неверный пароль"),
     SAME_PASSWORDS("Новый пароль равен старому"),
-    WRONG_CREDENTIALS("Неверные логин и/или пароль");
+    WRONG_CREDENTIALS("Неверные логин и/или пароль"),
+    BAD_IMAGE_FORMAT("Неверный формат изображения");
 
     private final String description;
 
