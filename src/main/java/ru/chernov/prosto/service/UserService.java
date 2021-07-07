@@ -11,7 +11,6 @@ import ru.chernov.prosto.domain.Role;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.mail.MailInfo;
 import ru.chernov.prosto.mail.MailManager;
-import ru.chernov.prosto.page.Error;
 import ru.chernov.prosto.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -60,27 +59,6 @@ public class UserService implements UserDetailsService {
 
     public User save(User user) {
         return userRepository.save(user);
-    }
-
-    public Error checkRegistrationData(String username, String email, String password, String passwordConfirm) {
-
-        // если username уже существует
-        if (loadUserByUsername(username) != null)
-            return Error.USERNAME_IS_TAKEN;
-
-        // если email уже привязан
-        if (findByEmail(email) != null)
-            return Error.EMAIL_IS_TAKEN;
-
-        // если пароль слишком короткий (минимум 6 символов)
-        if (password.length() < 6)
-            return Error.TOO_SHORT_PASSWORD;
-
-        // если пароль и подтверждение пароля не совпадают
-        if (!password.equals(passwordConfirm))
-            return Error.PASSWORDS_NOT_SAME;
-
-        return null;
     }
 
     public void registration(String username, String gender, String email,

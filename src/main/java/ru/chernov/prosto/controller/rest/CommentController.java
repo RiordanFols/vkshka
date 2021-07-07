@@ -35,6 +35,7 @@ public class CommentController {
     public Comment create(@AuthenticationPrincipal User user,
                           @PathVariable(name = "id") long postId,
                           @RequestBody Map<String, Object> body) throws IOException {
+        // no option to load images yet
         return commentService.create(user.getId(), postId, (String) body.get("text"), new MultipartFile[]{});
     }
 

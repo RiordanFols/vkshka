@@ -6,9 +6,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.chernov.prosto.component.FormChecker;
 import ru.chernov.prosto.domain.Gender;
 import ru.chernov.prosto.domain.entity.Post;
 import ru.chernov.prosto.domain.entity.User;
+import ru.chernov.prosto.page.Error;
 import ru.chernov.prosto.service.MessageService;
 import ru.chernov.prosto.service.PostService;
 import ru.chernov.prosto.service.UserService;
@@ -28,12 +30,15 @@ public class PageController {
     private final UserService userService;
     private final PostService postService;
     private final MessageService messageService;
+    private final FormChecker formChecker;
 
     @Autowired
-    public PageController(UserService userService, PostService postService, MessageService messageService) {
+    public PageController(UserService userService, PostService postService,
+                          MessageService messageService, FormChecker formChecker) {
         this.userService = userService;
         this.postService = postService;
         this.messageService = messageService;
+        this.formChecker = formChecker;
     }
 
     @GetMapping("/feed")
@@ -84,7 +89,9 @@ public class PageController {
     public String addPost(@AuthenticationPrincipal User user,
                           @RequestParam String text,
                           @RequestParam MultipartFile[] images) throws IOException {
-        postService.create(user.getId(), text, images);
+        Error error = formChecker.checkUploadedImages(images);
+        if (error == null)
+            postService.create(user.getId(), text, images);
 
         return "redirect:/me";
     }
@@ -145,9 +152,12 @@ public class PageController {
                              @PathVariable(name = "id") long targetId,
                              @RequestParam String text,
                              @RequestParam MultipartFile[] images) throws IOException {
-        messageService.create(user.getId(), targetId, text, images);
-
         User target = userService.findById(targetId);
+
+        Error error = formChecker.checkUploadedImages(images);
+        if (error == null)
+            messageService.create(user.getId(), targetId, text, images);
+
         return "redirect:/messenger/" + target.getUsername();
     }
 

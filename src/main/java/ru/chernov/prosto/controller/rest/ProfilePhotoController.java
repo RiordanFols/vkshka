@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.chernov.prosto.component.FormChecker;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.service.ProfileService;
 
@@ -13,20 +14,25 @@ import java.io.IOException;
  * @author Pavel Chernov
  */
 @RestController
-@RequestMapping("profile/photo")
+@RequestMapping("profile/avatar")
 public class ProfilePhotoController {
 
     private final ProfileService profileService;
+    private final FormChecker formChecker;
 
     @Autowired
-    public ProfilePhotoController(ProfileService profileService) {
+    public ProfilePhotoController(ProfileService profileService, FormChecker formChecker) {
         this.profileService = profileService;
+        this.formChecker = formChecker;
     }
 
     @PostMapping
     public User updateProfilePhoto(@AuthenticationPrincipal User user,
                                    @RequestParam("avatar") MultipartFile avatar) throws IOException {
-        return profileService.updateAvatar(user.getId(), avatar);
+        if (formChecker.checkUploadedImage(avatar) == null)
+            return profileService.updateAvatar(user.getId(), avatar);
+
+        return user;
     }
 
     @DeleteMapping

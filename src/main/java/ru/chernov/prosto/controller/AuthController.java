@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.chernov.prosto.component.FormChecker;
 import ru.chernov.prosto.domain.Gender;
 import ru.chernov.prosto.page.Error;
 import ru.chernov.prosto.page.Notification;
@@ -20,13 +21,15 @@ import java.util.Map;
  * @author Pavel Chernov
  */
 @Controller
-public class AuthenticationController {
+public class AuthController {
 
     private final UserService userService;
+    private final FormChecker formChecker;
 
     @Autowired
-    public AuthenticationController(UserService userService) {
+    public AuthController(UserService userService, FormChecker formChecker) {
         this.userService = userService;
+        this.formChecker = formChecker;
     }
 
     @GetMapping("/login")
@@ -34,14 +37,9 @@ public class AuthenticationController {
                             @RequestParam(required = false) String error,
                             Model model) {
         Map<Object, Object> data = new HashMap<>();
+        // замена пустой ошибки на ошибку логина
+        data.put("error", (error != null && error.isEmpty()) ? Error.WRONG_CREDENTIALS.toString() : error);
         data.put("notification", notification);
-        if (error != null && error.isEmpty()) {
-            data.put("error", Error.WRONG_CREDENTIALS.toString());
-        } else {
-            data.put("error", error);
-        }
-
-
         model.addAttribute("frontendData", data);
         return "auth/login";
     }
@@ -49,12 +47,25 @@ public class AuthenticationController {
     @GetMapping("/registration")
     public String registrationPage(@RequestParam(required = false) String notification,
                                    @RequestParam(required = false) String error,
+                                   @RequestParam(required = false) String username,
+                                   @RequestParam(required = false) String gender,
+                                   @RequestParam(required = false) String email,
+                                   @RequestParam(required = false) String name,
+                                   @RequestParam(required = false) String surname,
                                    Model model) {
 
         Map<Object, Object> data = new HashMap<>();
         data.put("genders", Gender.getAll());
         data.put("notification", notification);
         data.put("error", error);
+        var formData = new HashMap<>() {{
+            put("username", username);
+            put("gender", gender);
+            put("email", email);
+            put("name", name);
+            put("surname", surname);
+        }};
+        data.put("formData", formData);
 
         model.addAttribute("frontendData", data);
         return "auth/registration";
@@ -68,14 +79,19 @@ public class AuthenticationController {
                                @RequestParam String surname,
                                @RequestParam String password,
                                @RequestParam String passwordConfirm,
-                               RedirectAttributes redirectAttributes) {
-        Error error = userService.checkRegistrationData(username, email, password, passwordConfirm);
+                               RedirectAttributes ra) {
+        Error error = formChecker.checkRegistrationForm(username, email, password, passwordConfirm);
         if (error == null) {
             userService.registration(username, gender, email, name, surname, password);
-            redirectAttributes.addAttribute("notification", Notification.REGISTRATION_SUCCESSFUL.toString());
+            ra.addAttribute("notification", Notification.REGISTRATION_SUCCESSFUL.toString());
             return "redirect:/login";
         } else {
-            redirectAttributes.addAttribute("error", error.toString());
+            ra.addAttribute("error", error.toString());
+            ra.addAttribute("username", username);
+            ra.addAttribute("gender", gender);
+            ra.addAttribute("name", name);
+            ra.addAttribute("surname", surname);
+            ra.addAttribute("email", email);
             return "redirect:/registration";
         }
     }

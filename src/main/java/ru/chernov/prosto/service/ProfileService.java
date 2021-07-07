@@ -9,7 +9,6 @@ import ru.chernov.prosto.component.FileHandler;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.mail.MailInfo;
 import ru.chernov.prosto.mail.MailManager;
-import ru.chernov.prosto.page.Error;
 import ru.chernov.prosto.utils.ImageUtils;
 
 import java.io.IOException;
@@ -37,16 +36,15 @@ public class ProfileService {
     }
 
     public User updateAvatar(long userId, MultipartFile avatar) throws IOException {
-
         User user = userService.findById(userId);
 
         if (ImageUtils.isImageTypeAllowed(avatar)) {
-
             // если у пользователя не стоковый аватар
             if (!user.getAvatarFilename().equals(user.getGender().getStockAvatarFilename()))
                 // удаляем его старое фото
                 fileHandler.deleteAvatar(user.getAvatarFilename());
 
+            // ставим новое фото
             String filename = fileHandler.saveAvatar(avatar);
             user.setAvatarFilename(filename);
         }
@@ -55,7 +53,6 @@ public class ProfileService {
     }
 
     public User deleteAvatar(long userId) throws IOException {
-
         User user = userService.findById(userId);
 
         // если у пользователя не стоковый аватар
@@ -69,9 +66,8 @@ public class ProfileService {
         return userService.save(user);
     }
 
-    public Error updateData(long userId, String username, String gender, String name, String surname,
+    public void updateData(long userId, String username, String gender, String name, String surname,
                            String status, String birthdayString, String email) {
-
         User user = userService.findById(userId);
         // если дата рождения юзера не пустая, то форматируем ее
         LocalDate birthday = null;
@@ -79,14 +75,6 @@ public class ProfileService {
             var dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             birthday = LocalDate.parse(birthdayString, dtf);
         }
-
-        // если юзернейм занят и при этом не принадлежит текущему юзеру
-        if (userService.findByUsername(username) != null && !userService.findByUsername(username).equals(user))
-            return Error.USERNAME_IS_TAKEN;
-
-        // если почта занята и при этом не принадлежит текущему юзеру
-        if (userService.findByEmail(email) != null && !userService.findByEmail(email).equals(user))
-            return Error.EMAIL_IS_TAKEN;
 
         user.setUsername(username);
         userService.setGender(user, gender);
@@ -104,27 +92,13 @@ public class ProfileService {
         }
 
         userService.save(user);
-        return null;
     }
 
-    public Error updatePassword(long userId, String oldPassword, String newPassword, String newPasswordConfirm) {
+    public void updatePassword(long userId, String newPassword) {
         User user = userService.findById(userId);
-
-        if (!passwordEncoder.matches(oldPassword, user.getPassword()))
-            return Error.WRONG_PASSWORD;
-
-        if (!newPassword.equals(newPasswordConfirm))
-            return Error.PASSWORDS_NOT_SAME;
-
-        if (newPassword.length() < 6)
-            return Error.TOO_SHORT_NEW_PASSWORD;
-
-        if (newPassword.equals(oldPassword))
-            return Error.SAME_PASSWORDS;
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userService.save(user);
         mailManager.send(new MailInfo(user, "3"));
-        return null;
     }
 }

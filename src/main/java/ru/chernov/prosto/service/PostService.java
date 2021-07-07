@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.chernov.prosto.component.FileHandler;
 import ru.chernov.prosto.domain.entity.Post;
+import ru.chernov.prosto.domain.entity.Reply;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.repository.PostRepository;
-import ru.chernov.prosto.utils.ImageUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -31,6 +31,10 @@ public class PostService {
         this.postRepository = postRepository;
         this.userService = userService;
         this.fileHandler = fileHandler;
+    }
+
+    public Post save(Post post) {
+        return postRepository.save(post);
     }
 
     public List<Post> getUserPosts(long authorId) {
@@ -57,13 +61,13 @@ public class PostService {
         post.setCreationDateTime(LocalDateTime.now());
 
         for (var image: images) {
-            if (ImageUtils.isImageTypeAllowed(image) && post.getImgFilenames().size() < Post.MAX_IMAGES) {
-                String filename = fileHandler.saveImage(image);
-                post.getImgFilenames().add(filename);
-            }
+            String filename = fileHandler.saveImage(image);
+            post.getImgFilenames().add(filename);
+            if (post.getImgFilenames().size() == Reply.MAX_IMAGES)
+                break;
         }
 
-        return postRepository.save(post);
+        return save(post);
     }
 
     public void delete(long postId) throws IOException {
@@ -80,7 +84,7 @@ public class PostService {
 
         if (!post.getLikes().contains(user)) {
             post.getLikes().add(user);
-            postRepository.save(post);
+            save(post);
         }
     }
 
@@ -90,7 +94,7 @@ public class PostService {
 
         if (post.getLikes().contains(user)) {
             post.getLikes().remove(user);
-            postRepository.save(post);
+            save(post);
         }
     }
 }

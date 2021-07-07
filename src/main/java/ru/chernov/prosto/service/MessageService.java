@@ -38,14 +38,17 @@ public class MessageService {
         return messageRepository.findById(id).orElse(null);
     }
 
-    public Set<User> getAllContacts(long userId) {
-        Set<Long> contactsIds = messageRepository.findContactsIds(userId);
-        contactsIds.remove(userId);
+    public Message save(Message message) {
+        return messageRepository.save(message);
+    }
 
+    public Set<User> getAllContacts(long userId) {
         Set<User> contacts = new TreeSet<>(
                 Comparator.comparing(o -> getLastMessageInCorrespondence(o.getId(), userId).getCreationDateTime(),
                         Comparator.reverseOrder()));
 
+        Set<Long> contactsIds = messageRepository.findContactsIds(userId);
+        contactsIds.remove(userId);
         for (long contactId : contactsIds) {
             contacts.add(userService.findById(contactId));
         }
@@ -80,7 +83,7 @@ public class MessageService {
             }
         }
 
-        return messageRepository.save(message);
+        return save(message);
     }
 
     public void delete(long messageId) throws IOException {
@@ -100,10 +103,9 @@ public class MessageService {
 
         Message lastMessage = getLastMessageInCorrespondence(userId, targetId);
 
-        Map<String, String> map = new HashMap<>();
-        map.put("author", lastMessageInfoFormatter.formatAuthor(lastMessage, userId));
-        map.put("text", lastMessageInfoFormatter.formatLastMessageInfo(lastMessage));
-
-        return map;
+        return new HashMap<>() {{
+            put("author", lastMessageInfoFormatter.formatAuthor(lastMessage, userId));
+            put("text", lastMessageInfoFormatter.formatLastMessageInfo(lastMessage));
+        }};
     }
 }

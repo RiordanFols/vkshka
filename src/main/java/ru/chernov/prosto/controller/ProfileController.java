@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.chernov.prosto.component.FormChecker;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.page.Error;
 import ru.chernov.prosto.page.Notification;
@@ -23,16 +24,19 @@ import java.io.IOException;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final FormChecker formChecker;
 
     @Autowired
-    public ProfileController(ProfileService profileService) {
+    public ProfileController(ProfileService profileService, FormChecker formChecker) {
         this.profileService = profileService;
+        this.formChecker = formChecker;
     }
 
     @PostMapping("/update/avatar")
     public String updateProfilePhoto(@AuthenticationPrincipal User user,
                                      @RequestParam("avatar") MultipartFile avatar) throws IOException {
-        profileService.updateAvatar(user.getId(), avatar);
+        if (formChecker.checkUploadedImage(avatar) == null)
+            profileService.updateAvatar(user.getId(), avatar);
 
         return "redirect:/profile";
     }
@@ -48,10 +52,9 @@ public class ProfileController {
                                 @RequestParam String email,
                                 RedirectAttributes redirectAttributes) {
 
-        Error error = profileService.updateData(
-                user.getId(), username, gender, name, surname, status, birthdayString, email);
-
+        Error error = formChecker.checkProfileUpdateForm(user.getId(), username, email);
         if (error == null) {
+            profileService.updateData(user.getId(), username, gender, name, surname, status, birthdayString, email);
             redirectAttributes.addAttribute("notification", Notification.DATA_UPDATE_SUCCESSFUL.toString());
         } else {
             redirectAttributes.addAttribute("error", error.toString());
@@ -66,8 +69,10 @@ public class ProfileController {
                                  @RequestParam String newPassword,
                                  @RequestParam String newPasswordConfirm,
                                  RedirectAttributes redirectAttributes) {
-        Error error = profileService.updatePassword(user.getId(), oldPassword, newPassword, newPasswordConfirm);
+
+        Error error = formChecker.checkPasswordUpdateForm(user.getId(), oldPassword, newPassword, newPasswordConfirm);
         if (error == null) {
+            profileService.updatePassword(user.getId(), newPassword);
             redirectAttributes.addAttribute("passwordNotification", Notification.PASSWORD_UPDATE_SUCCESSFUL.toString());
         } else {
             redirectAttributes.addAttribute("passwordError", error.toString());

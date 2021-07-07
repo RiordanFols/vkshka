@@ -6,9 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.chernov.prosto.component.FileHandler;
 import ru.chernov.prosto.domain.entity.Comment;
 import ru.chernov.prosto.domain.entity.Post;
+import ru.chernov.prosto.domain.entity.Reply;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.repository.CommentRepository;
-import ru.chernov.prosto.utils.ImageUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -36,6 +36,10 @@ public class CommentService {
         this.fileHandler = fileHandler;
     }
 
+    public Comment save(Comment comment) {
+        return commentRepository.save(comment);
+    }
+
     public Comment findById(long commentId) {
         return commentRepository.findById(commentId).orElse(null);
     }
@@ -50,19 +54,19 @@ public class CommentService {
         comment.setAuthor(author);
         comment.setPost(post);
 
-        for (var image: images) {
-            if (ImageUtils.isImageTypeAllowed(image) && comment.getImgFilenames().size() < Comment.MAX_IMAGES) {
-                String filename = fileHandler.saveImage(image);
-                comment.getImgFilenames().add(filename);
-            }
+        for (var image : images) {
+            String filename = fileHandler.saveImage(image);
+            comment.getImgFilenames().add(filename);
+            if (comment.getImgFilenames().size() == Reply.MAX_IMAGES)
+                break;
         }
 
-        return commentRepository.save(comment);
+        return save(comment);
     }
 
     public void delete(long commentId) throws IOException {
         Comment comment = findById(commentId);
-        for (var filename: comment.getImgFilenames())
+        for (var filename : comment.getImgFilenames())
             fileHandler.deleteImage(filename);
 
         commentRepository.deleteById(commentId);
@@ -83,7 +87,7 @@ public class CommentService {
 
         if (!comment.getLikes().contains(user)) {
             comment.getLikes().add(user);
-            commentRepository.save(comment);
+            save(comment);
         }
     }
 
@@ -93,7 +97,7 @@ public class CommentService {
 
         if (comment.getLikes().contains(user)) {
             comment.getLikes().remove(user);
-            commentRepository.save(comment);
+            save(comment);
         }
     }
 }

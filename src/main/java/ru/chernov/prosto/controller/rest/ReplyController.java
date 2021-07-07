@@ -35,6 +35,7 @@ public class ReplyController {
     public Reply create(@AuthenticationPrincipal User user,
                           @PathVariable(name = "id") long commentId,
                           @RequestBody Map<String, Object> body) throws IOException {
+        // no option to load images yet
         return replyService.create(user.getId(), commentId, (String) body.get("text"), new MultipartFile[]{});
     }
 

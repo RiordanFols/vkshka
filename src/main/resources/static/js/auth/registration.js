@@ -5,6 +5,7 @@ let registration = new Vue({
         genders: frontendData.genders,
         error: frontendData.error,
         notification: frontendData.notification,
+        fd: frontendData.formData,
 
     },
     template:
@@ -18,7 +19,7 @@ let registration = new Vue({
 
                     '<div class="auth-input-line">' +
                         '<div class="auth-label">Имя пользователя</div>' +
-                        '<input class="auth-input" type="text" name="username" maxlength="25" required autofocus>' +
+                        '<input class="auth-input" type="text" :value="fd.username" name="username" maxlength="25" required autofocus>' +
                     '</div>' +
 
                     '<div class="auth-input-line">' +
@@ -30,18 +31,18 @@ let registration = new Vue({
 
                     '<div class="auth-input-line">' +
                         '<div class="auth-label">Почта</div>' +
-                        '<input class="auth-input" type="email" name="email" maxlength="129" required>' +
+                        '<input class="auth-input" type="email" :value="fd.email" name="email" maxlength="129" required>' +
                     '</div>' +
 
                     '<br/>' +
                     '<div class="auth-input-line">' +
                         '<div class="auth-label">Имя</div>' +
-                        '<input class="auth-input" type="text" name="name" maxlength="25" required>' +
+                        '<input class="auth-input" type="text" :value="fd.name" name="name" maxlength="25" required>' +
                     '</div>' +
 
                     '<div class="auth-input-line">' +
                         '<div class="auth-label">Фамилия</div>' +
-                        '<input class="auth-input" type="text" name="surname" maxlength="25">' +
+                        '<input class="auth-input" type="text" :value="fd.surname" name="surname" maxlength="25">' +
                     '</div>' +
 
                     '<br/>' +

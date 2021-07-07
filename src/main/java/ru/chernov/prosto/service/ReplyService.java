@@ -8,7 +8,6 @@ import ru.chernov.prosto.domain.entity.Comment;
 import ru.chernov.prosto.domain.entity.Reply;
 import ru.chernov.prosto.domain.entity.User;
 import ru.chernov.prosto.repository.ReplyRepository;
-import ru.chernov.prosto.utils.ImageUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,6 +33,10 @@ public class ReplyService {
         this.fileHandler = fileHandler;
     }
 
+    public Reply save(Reply reply) {
+        return replyRepository.save(reply);
+    }
+
     public Reply findById(long replyId) {
         return replyRepository.findById(replyId).orElse(null);
     }
@@ -49,19 +52,19 @@ public class ReplyService {
         reply.setComment(comment);
         reply.setText(text);
 
-        for (var image: images) {
-            if (ImageUtils.isImageTypeAllowed(image) && reply.getImgFilenames().size() < Reply.MAX_IMAGES) {
-                String filename = fileHandler.saveImage(image);
-                reply.getImgFilenames().add(filename);
-            }
+        for (var image : images) {
+            String filename = fileHandler.saveImage(image);
+            reply.getImgFilenames().add(filename);
+            if (reply.getImgFilenames().size() == Reply.MAX_IMAGES)
+                break;
         }
 
-        return replyRepository.save(reply);
+        return save(reply);
     }
 
     public void delete(long replyId) throws IOException {
         Reply reply = findById(replyId);
-        for (var filename: reply.getImgFilenames())
+        for (var filename : reply.getImgFilenames())
             fileHandler.deleteImage(filename);
 
         replyRepository.deleteById(replyId);
@@ -77,7 +80,7 @@ public class ReplyService {
 
         if (!reply.getLikes().contains(user)) {
             reply.getLikes().add(user);
-            replyRepository.save(reply);
+            save(reply);
         }
     }
 
@@ -87,7 +90,7 @@ public class ReplyService {
 
         if (reply.getLikes().contains(user)) {
             reply.getLikes().remove(user);
-            replyRepository.save(reply);
+            save(reply);
         }
     }
 }
