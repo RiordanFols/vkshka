@@ -1,4 +1,5 @@
 let chatApi = Vue.resource('/chat{/id}');
+let userInfoApi = Vue.resource('/user-info{/id}');
 
 Vue.component('message-img', {
     props: ['imgFilename'],
@@ -44,16 +45,28 @@ Vue.component('chat', {
 
 Vue.component('chat-header', {
     props: ['target'],
+    data: function () {
+        return {
+            lastOnline: null,
+        };
+    },
     template:
         '<div class="chat-header">' +
             '<a v-bind:href="\'/user/\' + target.username">' +
                 '<div class="chat-header-name">{{ target.name }} {{ target.surname }}</div>' +
             '</a>' +
-            '<div class="chat-header-last-online">{{ target.lastOnlineString }}</div>' +
+            '<div class="chat-header-last-online">{{ lastOnline }}</div>' +
             '<a v-bind:href="\'/user/\' + target.username">' +
                 '<img class="chat-header-img" v-bind:src="\'/uploads/img/avatar/\' + target.avatarFilename" alt=""/>' +
             '</a>' +
-        '</div>'
+        '</div>',
+    created: function () {
+        userInfoApi.get({id: this.target.id}).then(result => {
+            result.json().then(data => {
+                this.lastOnline = data.lastOnline;
+            });
+        });
+    }
 });
 
 Vue.component('message-form', {
@@ -84,7 +97,7 @@ Vue.component('user-el', {
     data: function () {
         return {
             lastMessage: {},
-        }
+        };
     },
     template:
         '<a v-bind:href="\'/messenger/\' + user.username">' +

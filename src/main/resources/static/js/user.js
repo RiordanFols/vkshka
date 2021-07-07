@@ -4,6 +4,7 @@ let commentApi = Vue.resource('/comment{/id}');
 let commentLikeApi = Vue.resource('/comment-like{/id}');
 let replyApi = Vue.resource('/reply{/id}');
 let replyLikeApi = Vue.resource('/reply-like{/id}');
+let userInfoApi = Vue.resource('/user-info{/id}');
 
 Vue.component('reply-el', {
     props: ['reply', 'replies', 'me', 'deleteReply'],
@@ -364,7 +365,10 @@ Vue.component('user-info', {
             subscribersN: 0,
             subscriptionsN: 0,
             isSubscribed: false,
-        }
+            lastOnline: null,
+            birthday: null,
+            age: null,
+        };
     },
     template:
         '<div class="user-info">' +
@@ -379,13 +383,13 @@ Vue.component('user-info', {
             '<div class="user-info-right">' +
                 '<div class="user-info-right-top">' +
                     '<div class="user-name">{{ user.name }} {{ user.surname }}</div>' +
-                    '<div class="user-activity">{{ user.lastOnlineString }}</div>' +
+                    '<div class="user-activity">{{ lastOnline }}</div>' +
                 '</div>' +
                 '<div class="user-info-right-other">' +
                     '<div class="user-status">{{ user.status }}</div>' +
                     '<div class="user-info-line">Пол: {{ user.gender }}</div>' +
-                    '<div class="user-info-line">День рождения: {{ user.birthdayString }}</div>' +
-                    '<div class="user-info-line">Возраст: {{ user.age }}</div>' +
+                    '<div class="user-info-line">День рождения: {{ birthday }}</div>' +
+                    '<div class="user-info-line">Возраст: {{ age }}</div>' +
                 '</div>' +
                 '<div class="user-info-right-footer">' +
                     '<div class="user-info-footer-box">' +
@@ -425,6 +429,14 @@ Vue.component('user-info', {
                 this.isSubscribed = data.isSubscribed;
                 this.subscribersN = data.subscribersN;
                 this.subscriptionsN = data.subscriptionsN;
+            });
+        });
+
+        userInfoApi.get({id: this.user.id}).then(result => {
+            result.json().then(data => {
+                this.age = data.age;
+                this.birthday = data.birthday;
+                this.lastOnline = data.lastOnline;
             });
         });
     }

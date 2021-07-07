@@ -79,15 +79,6 @@ public class User implements UserDetails {
     @JsonIgnore
     private String activationCode;
 
-    @Transient
-    private String birthdayString;
-
-    @Transient
-    private int age;
-
-    @Transient
-    private String lastOnlineString;
-
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", nullable = false, updatable = false))
