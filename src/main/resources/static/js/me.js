@@ -5,6 +5,7 @@ let commentLikeApi = Vue.resource('/comment-like{/id}');
 let replyApi = Vue.resource('/reply{/id}');
 let replyLikeApi = Vue.resource('/reply-like{/id}');
 let subscriptionApi = Vue.resource('/subscription{/id}');
+let userInfoApi = Vue.resource('/user-info{/id}');
 
 Vue.component('reply-el', {
     props: ['reply', 'replies', 'deleteReply', 'me'],
@@ -390,12 +391,14 @@ Vue.component('post-list', {
     }
 });
 
-Vue.component('user-info', {
+Vue.component('me-info', {
     props: ['me'],
     data: function () {
         return {
             subscribersN: 0,
             subscriptionsN: 0,
+            birthday: null,
+            age: null
         }
     },
     template:
@@ -411,8 +414,8 @@ Vue.component('user-info', {
                 '<div class="user-info-right-other">' +
                     '<div class="user-status">{{ me.status }}</div>' +
                     '<div class="user-info-line">Пол: {{ me.gender }}</div>' +
-                    '<div class="user-info-line">День рождения: {{ me.birthdayString }}</div>' +
-                    '<div class="user-info-line">Возраст: {{ me.age }}</div>' +
+                    '<div class="user-info-line">День рождения: {{ birthday }}</div>' +
+                    '<div class="user-info-line">Возраст: {{ age }}</div>' +
                 '</div>' +
                 '<div class="user-info-right-footer">' +
                     '<a href="/subscribers"><div class="user-info-footer-box">' +
@@ -433,6 +436,13 @@ Vue.component('user-info', {
                 this.subscriptionsN = data.subscriptionsN;
             });
         });
+
+        userInfoApi.get({id: this.me.id}).then(result => {
+            result.json().then(data => {
+                this.birthday = data.birthday;
+                this.age = data.age;
+            });
+        });
     }
 });
 
@@ -444,7 +454,7 @@ let me = new Vue({
     },
     template:
         '<div class="middle">' +
-            '<user-info :me="me"/>' +
+            '<me-info :me="me"/>' +
             '<post-form :me="me"/>' +
             '<post-list :posts="posts" :me="me"/>' +
         '</div>',

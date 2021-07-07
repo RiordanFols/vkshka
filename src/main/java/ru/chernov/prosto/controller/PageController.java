@@ -58,8 +58,6 @@ public class PageController {
         if (foundUser.equals(user))
             return "redirect:/me";
 
-        userService.formatExtraInfo(foundUser);
-
         Map<Object, Object> data = new HashMap<>();
         data.put("me", user);
         data.put("user", foundUser);
@@ -73,7 +71,6 @@ public class PageController {
     public String myPage(@AuthenticationPrincipal User user,
                          Model model) {
         User me = userService.findById(user.getId());
-        userService.formatExtraInfo(me);
 
         Map<Object, Object> data = new HashMap<>();
         data.put("me", me);
@@ -129,7 +126,6 @@ public class PageController {
                        @AuthenticationPrincipal User user,
                        Model model) {
         User target = userService.findByUsername(username);
-        userService.formatExtraInfo(target);
 
         if (user.getUsername().equals(username) || target == null)
             return "error/404";

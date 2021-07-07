@@ -39,66 +39,51 @@ public class UserInfoFormatter {
     @Value("${session.threshold.days}")
     private int daysThreshold;
 
-    public void formatLastOnlineString(User user) {
+    public String formatLastOnlineString(User user) {
         var now = LocalDateTime.now();
         var lastOnline = user.getLastOnline();
 
-        String lastOnlineString = "";
-
         // сейчас онлайн
         int secondsAgo = (int)(now.toEpochSecond(ZoneOffset.UTC) - lastOnline.toEpochSecond(ZoneOffset.UTC));
-        if (secondsAgo < secondsThreshold) {
-            lastOnlineString = ONLINE_MESSAGE;
-            user.setLastOnlineString(lastOnlineString);
-            return;
-        }
+        if (secondsAgo < secondsThreshold)
+            return ONLINE_MESSAGE;
 
-        switch (user.getGender()) {
-            case MALE -> lastOnlineString += VERB_MALE;
-            case FEMALE -> lastOnlineString += VERB_FEMALE;
-            case UNDEFINED -> lastOnlineString += VERB_UNDEFINED;
-        }
+        // слова 'был' / 'была'
+        var genderVerb = switch (user.getGender()) {
+            case MALE -> VERB_MALE;
+            case FEMALE -> VERB_FEMALE;
+            case UNDEFINED -> VERB_UNDEFINED;
+        };
 
         // был в сети n минут назад
         int minutesAgo = secondsAgo / 60;
-        if (minutesAgo < minutesThreshold) {
-            lastOnlineString += String.format(MINUTES_AGO_MESSAGE, minutesAgo);
-            user.setLastOnlineString(lastOnlineString);
-            return;
-        }
+        if (minutesAgo < minutesThreshold)
+            return genderVerb + String.format(MINUTES_AGO_MESSAGE, minutesAgo);
 
         // был в сети n часов назад
         int hoursAgo = minutesAgo / 60;
-        if (hoursAgo < hoursThreshold) {
-            lastOnlineString += String.format(HOURS_AGO_MESSAGE, hoursAgo);
-            user.setLastOnlineString(lastOnlineString);
-            return;
-        }
+        if (hoursAgo < hoursThreshold)
+            return genderVerb + String.format(HOURS_AGO_MESSAGE, hoursAgo);
 
         // был в сети n часов назад
         int daysAgo = hoursAgo / 24;
-        if (daysAgo < daysThreshold) {
-            lastOnlineString += String.format(DAYS_AGO_MESSAGE, daysAgo);
-            user.setLastOnlineString(lastOnlineString);
-            return;
-        }
+        if (daysAgo < daysThreshold)
+            return genderVerb + String.format(DAYS_AGO_MESSAGE, daysAgo);
 
         // показ полной даты последнего онлайна
-        lastOnlineString += String.format(LAST_DATE_MESSAGE, DateUtils.formatDate(lastOnline));
-        user.setLastOnlineString(lastOnlineString);
+        return genderVerb + String.format(LAST_DATE_MESSAGE, DateUtils.formatDate(lastOnline));
     }
 
-    public void formatBirthdayString(User user) {
-        if (user.getBirthday() != null) {
-            user.setBirthdayString(DateUtils.formatDate(user.getBirthday()));
-        }
+    public String formatBirthdayString(User user) {
+        return user.getBirthday() != null ? DateUtils.formatDate(user.getBirthday()) : "";
     }
 
-    public void formatAge(User user) {
-        if (user.getBirthday() != null) {
-            LocalDate now = LocalDate.now();
-            Period period = Period.between(user.getBirthday(), now);
-            user.setAge(period.getYears());
-        }
+    public String formatAge(User user) {
+        if (user.getBirthday() == null)
+            return "";
+
+        LocalDate now = LocalDate.now();
+        Period period = Period.between(user.getBirthday(), now);
+        return String.valueOf(period.getYears());
     }
 }

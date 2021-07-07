@@ -142,12 +142,6 @@ public class UserService implements UserDetailsService {
         save(user);
     }
 
-    public void formatExtraInfo(User user) {
-        userInfoFormatter.formatBirthdayString(user);
-        userInfoFormatter.formatAge(user);
-        userInfoFormatter.formatLastOnlineString(user);
-    }
-
     public void setGender(User user, String gender) {
         Gender newGender = Gender.valueOf(gender);
         // если пользователь еще не создан или имеет стоковый аватар
