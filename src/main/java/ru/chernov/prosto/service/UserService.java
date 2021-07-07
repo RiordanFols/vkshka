@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import ru.chernov.prosto.domain.Gender;
 import ru.chernov.prosto.domain.Role;
 import ru.chernov.prosto.domain.entity.User;
-import ru.chernov.prosto.formatter.UserInfoFormatter;
 import ru.chernov.prosto.mail.MailInfo;
 import ru.chernov.prosto.mail.MailManager;
 import ru.chernov.prosto.page.Error;
@@ -25,15 +24,14 @@ import java.util.Collections;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final UserInfoFormatter userInfoFormatter;
     private final MailManager mailManager;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserInfoFormatter userInfoFormatter,
-                       MailManager mailManager, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       MailManager mailManager,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.userInfoFormatter = userInfoFormatter;
         this.mailManager = mailManager;
         this.passwordEncoder = passwordEncoder;
     }
